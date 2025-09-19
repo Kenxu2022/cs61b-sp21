@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Ken Xu
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -109,10 +109,43 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
+        board.setViewingPerspective(side);
 
-        // TODO: Modify this.board (and perhaps this.score) to account
-        // for the tilt to the Side SIDE. If the board changed, set the
-        // changed local variable to true.
+        int size = board.size();
+        for (int row = size - 1; row > 0; row--){ // start from the top
+            for (int topTileColumn = 0; topTileColumn < size; topTileColumn++) { // first column
+                boolean forbidMerge = false;
+                Tile topTile = board.tile(topTileColumn, row);
+                int topTileValue = topTile != null ? topTile.value() : 0;
+                for (int trailingTileRow = row - 1; trailingTileRow >= 0; trailingTileRow--) {
+                    Tile trailingTile = board.tile(topTileColumn, trailingTileRow);
+                    int trailingTileValue = trailingTile != null ? trailingTile.value() : 0;
+                    if ((topTileValue == trailingTileValue && topTile != null && trailingTile != null) ||
+                        (topTile == null && trailingTile != null)) {
+                        int destinationRow = row;
+                        if (forbidMerge) { // forbid recursive merge
+                            destinationRow = row - 1;
+                            forbidMerge = false; //reset flag
+                        }
+                        boolean result = board.move(topTileColumn, destinationRow, trailingTile);
+                        if (result) {
+                            score = score + topTileValue * 2;
+                            forbidMerge = true;
+                        }
+                        topTile = board.tile(topTileColumn, row); 
+                        topTileValue = topTile.value();
+                        changed = true;
+                    }
+                    else {
+                        if (trailingTile != null) {
+                            break; // no need to iterate based on current top tile
+                        }
+                    }
+                }
+            }
+        }
+
+        board.setViewingPerspective(Side.NORTH); // reset viewpoint
 
         checkGameOver();
         if (changed) {
@@ -137,7 +170,15 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                Tile tileValue = b.tile(i, j);
+                if (tileValue == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +188,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                Tile tileValue = b.tile(i, j);
+                if (tileValue != null && tileValue.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -157,8 +206,38 @@ public class Model extends Observable {
      * 1. There is at least one empty space on the board.
      * 2. There are two adjacent tiles with the same value.
      */
+    public static int[] adjacentTile(int num, int size) {
+            if (num == 0) {
+                return new int[]{1};
+            }
+            if (num == size - 1) {
+                return new int[]{-1};
+            }
+            return new int[]{-1, 1};
+    }
+
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for(int i = 0; i < size; i++) { // vertical
+            for(int j = 0; j < size; j++) { // horizontal
+                Tile tileValue = b.tile(i, j);
+                if (tileValue == null) {
+                    return true;
+                }
+                for (int v : adjacentTile(i, size)) { // (i + v ,j)
+                    Tile verticalAdjacentTileValue = b.tile(i + v, j);
+                    if (verticalAdjacentTileValue == null || tileValue.value() == verticalAdjacentTileValue.value()) {
+                        return true;
+                    }
+                }
+                for (int h : adjacentTile(j, size)) { //(i, j + h)
+                    Tile horizontalAdjacentTileValue = b.tile(i, j + h);
+                    if (horizontalAdjacentTileValue == null || tileValue.value() == horizontalAdjacentTileValue.value()) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
