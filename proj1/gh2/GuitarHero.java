@@ -38,8 +38,7 @@ public class GuitarHero {
                 for (GuitarString i : guitarStringObjectArray) {
                     i.tic();
                 }
-            }
-            catch(Exception e) {
+            } catch (NullPointerException e) {
                 System.out.println("This key does not have corresponding note!");
                 continue;
             }
