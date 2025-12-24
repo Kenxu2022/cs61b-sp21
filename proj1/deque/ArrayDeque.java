@@ -111,7 +111,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T removedItem = items[0];
         System.arraycopy(items, 1, newArray, 0, items.length - 1);
         size = size - 1;
-        nextLast= nextLast - 1;
+        nextLast = nextLast - 1;
         items = newArray;
         return removedItem;
     }
@@ -136,7 +136,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private class ArrayDequeIterator implements Iterator<T> {
         private int currentPosition;
 
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             currentPosition = 0;
         }
 
@@ -151,22 +151,22 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
-    public boolean oldEquals(Object o) {
-        if (o instanceof ArrayDeque) {
-            if (((ArrayDeque<T>) o).size == size) {
-                T[] originalArray = this.tidyArray();
-                T[] compareArray = (T[]) ((ArrayDeque<?>) o).tidyArray();
-                for (int i = 0; i < size; i = i + 1) {
-                    if (originalArray[i] != compareArray[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
+//    public boolean oldEquals(Object o) {
+//        if (o instanceof ArrayDeque) {
+//            if (((ArrayDeque<T>) o).size == size) {
+//                T[] originalArray = this.tidyArray();
+//                T[] compareArray = (T[]) ((ArrayDeque<?>) o).tidyArray();
+//                for (int i = 0; i < size; i = i + 1) {
+//                    if (originalArray[i] != compareArray[i]) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            }
+//            return false;
+//        }
+//        return false;
+//    }
 
     @Override
     public boolean equals(Object o) {

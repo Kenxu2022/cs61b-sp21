@@ -47,8 +47,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
             if (currentNode.nextNode != sentinel) {
                 System.out.print(currentNode.nextNode.item + " ");
                 currentNode = currentNode.nextNode;
-            }
-            else {
+            } else {
                 System.out.println();
                 break;
             }
@@ -86,8 +85,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
             for (int i = 0; i <= index; i = i + 1) {
                 currentNode = currentNode.nextNode;
             }
-        }
-        else { // counting backward
+        } else { // counting backward
             for (int i = 0; i < size - index; i = i + 1) {
                 currentNode = currentNode.prevNode;
             }
@@ -99,7 +97,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         return getRecursive(index, sentinel.nextNode);
     }
 
-    public T getRecursive(int index, Node currentNode) {
+    private T getRecursive(int index, Node currentNode) {
         if (index == 0) {
             return currentNode.item;
         }
@@ -113,7 +111,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private class LinkedListDequeIterator implements Iterator<T> {
         private int currentPosition;
 
-        public LinkedListDequeIterator() {
+        LinkedListDequeIterator() {
             currentPosition = 0;
         }
 
@@ -128,22 +126,22 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
-    public boolean oldEquals(Object o) {
-        if (o instanceof LinkedListDeque) {
-            if (((LinkedListDeque<?>) o).size == size) {
-                Node currentNode = sentinel;
-                Node currentTestNode = (Node) ((LinkedListDeque<?>) o).sentinel;
-                for (int i = 0; i < size; i = i + 1) {
-                    if (currentNode.nextNode.item != currentTestNode.nextNode.item) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
+//    public boolean oldEquals(Object o) {
+//        if (o instanceof LinkedListDeque) {
+//            if (((LinkedListDeque<?>) o).size == size) {
+//                Node currentNode = sentinel;
+//                Node currentTestNode = (Node) ((LinkedListDeque<?>) o).sentinel;
+//                for (int i = 0; i < size; i = i + 1) {
+//                    if (currentNode.nextNode.item != currentTestNode.nextNode.item) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            }
+//            return false;
+//        }
+//        return false;
+//    }
 
     @Override
     public boolean equals(Object o) { // utilize iteration
