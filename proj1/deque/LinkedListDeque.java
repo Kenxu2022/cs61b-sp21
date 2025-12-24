@@ -1,8 +1,8 @@
 package deque;
 
-import java.util.TreeMap;
+import java.util.Iterator;
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private class Node {
         private Node prevNode;
         private T item;
@@ -35,10 +35,6 @@ public class LinkedListDeque<T> {
         sentinel.prevNode = new Node(sentinel.prevNode, item, sentinel);
         sentinel.prevNode.prevNode.nextNode = sentinel.prevNode;
         size = size + 1;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     public int size() {
@@ -110,13 +106,56 @@ public class LinkedListDeque<T> {
         return getRecursive(index - 1, currentNode.nextNode);
     }
 
-    public boolean equals(Object o) {
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private int currentPosition;
+
+        public LinkedListDequeIterator() {
+            currentPosition = 0;
+        }
+
+        public boolean hasNext() {
+            return currentPosition < size;
+        }
+
+        public T next() {
+            T returnItem = get(currentPosition);
+            currentPosition = currentPosition + 1;
+            return returnItem;
+        }
+    }
+
+    public boolean oldEquals(Object o) {
         if (o instanceof LinkedListDeque) {
             if (((LinkedListDeque<?>) o).size == size) {
                 Node currentNode = sentinel;
                 Node currentTestNode = (Node) ((LinkedListDeque<?>) o).sentinel;
                 for (int i = 0; i < size; i = i + 1) {
                     if (currentNode.nextNode.item != currentTestNode.nextNode.item) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) { // utilize iteration
+        if (o instanceof LinkedListDeque testLinkedListDeque) {
+            if (this == testLinkedListDeque) { // same reference
+                return true;
+            }
+            if (this.size == testLinkedListDeque.size) {
+                Iterator<T> currentIterator = this.iterator();
+                Iterator<?> testIterator = testLinkedListDeque.iterator();
+                while (currentIterator.hasNext()) {
+                    if (!currentIterator.next().equals(testIterator.next())) {
                         return false;
                     }
                 }

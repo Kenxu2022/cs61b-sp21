@@ -1,6 +1,8 @@
 package deque;
 
-public class ArrayDeque<T> {
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int size;
     private int nextFirst;
     private T[] items;
@@ -49,10 +51,6 @@ public class ArrayDeque<T> {
         items[nextLast] = item;
         nextLast = nextLast + 1;
         size = size + 1;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     public int size() {
@@ -118,27 +116,69 @@ public class ArrayDeque<T> {
         return removedItem;
     }
 
-    public T get(int index) {
-        T[] getArray = (T[]) new Object[size];
+    private T[] tidyArray() {
+        T[] newArray = (T[]) new Object[size];
         int firstLength = items.length - nextFirst - 1;
-        System.arraycopy(items, nextFirst + 1, getArray, 0, firstLength);
-        System.arraycopy(items, 0, getArray, firstLength, nextLast);
+        System.arraycopy(items, nextFirst + 1, newArray, 0, firstLength);
+        System.arraycopy(items, 0, newArray, firstLength, nextLast);
+        return newArray;
+    }
+
+    public T get(int index) {
+        T[] getArray = this.tidyArray();
         return getArray[index];
     }
 
-    public boolean equals(Object o) {
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int currentPosition;
+
+        public ArrayDequeIterator() {
+            currentPosition = 0;
+        }
+
+        public boolean hasNext() {
+            return currentPosition < size;
+        }
+
+        public T next() {
+            T returnItem = get(currentPosition);
+            currentPosition = currentPosition + 1;
+            return returnItem;
+        }
+    }
+
+    public boolean oldEquals(Object o) {
         if (o instanceof ArrayDeque) {
             if (((ArrayDeque<T>) o).size == size) {
-                T[] originalArray = (T[]) new Object[size];
-                T[] compareArray = (T[]) new Object[((ArrayDeque<T>) o).size];
-                int originalFirstLength = items.length - nextFirst - 1;
-                int compareFirstLength = ((ArrayDeque<T>) o).items.length - ((ArrayDeque<T>) o).nextFirst - 1;
-                System.arraycopy(items, nextFirst + 1, originalArray, 0, originalFirstLength);
-                System.arraycopy(((ArrayDeque<T>) o).items, ((ArrayDeque<T>) o).nextFirst + 1, compareArray, 0, compareFirstLength);
-                System.arraycopy(items, 0, originalArray, originalFirstLength, nextLast);
-                System.arraycopy(((ArrayDeque<T>) o).items, 0, compareArray, compareFirstLength, ((ArrayDeque<T>) o).nextLast);
+                T[] originalArray = this.tidyArray();
+                T[] compareArray = (T[]) ((ArrayDeque<?>) o).tidyArray();
                 for (int i = 0; i < size; i = i + 1) {
                     if (originalArray[i] != compareArray[i]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ArrayDeque testArrayDeque) {
+            if (this == testArrayDeque) { // same reference
+                return true;
+            }
+            if (this.size == testArrayDeque.size) {
+                Iterator<T> arrayDequeIterator = this.iterator();
+                Iterator<?> testArrayDequeIterator = testArrayDeque.iterator();
+                while (arrayDequeIterator.hasNext()) {
+                    if (arrayDequeIterator.next() != testArrayDequeIterator.next()) {
                         return false;
                     }
                 }
