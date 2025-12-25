@@ -1,5 +1,6 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -209,6 +210,59 @@ public class LinkedListDequeTest {
         for (int i : lld) {
             assertEquals(position, i);
             position = position + 1;
+        }
+    }
+
+    @Test
+    public void sameItemTest() {
+        ArrayDeque<Integer> ad = new ArrayDeque<Integer>();
+        LinkedListDeque<Integer> lld = new LinkedListDeque<Integer>();
+        for (int i = 0; i < 1000; i = i + 1) {
+            ad.addLast(i);
+        }
+        for (int i = 0; i < 1000; i = i + 1) {
+            lld.addLast(i);
+        }
+        assertTrue(lld.equals(ad));
+    }
+
+    @Test
+    public void randomizedTest() {
+        LinkedListDeque<Integer> L = new LinkedListDeque<>();
+        LinkedListDeque<Integer> bL = new LinkedListDeque<>();
+
+        int N = 500000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 4);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                L.addLast(randVal);
+                bL.addLast(randVal);
+            } else if (operationNumber == 1) {
+                // size
+                int size = L.size();
+                int bSize = bL.size();
+                assertEquals(size, bSize);
+
+            }
+            else if (operationNumber == 2) {
+                if (L.isEmpty()) {
+                    continue;
+                }
+                int getOperationNumber = StdRandom.uniform(0, L.size());
+                int lastVal = L.get(getOperationNumber);
+                int bLastVal = bL.get(getOperationNumber);
+                assertEquals(lastVal, bLastVal);
+            }
+            else {
+                if (L.isEmpty()) {
+                    continue;
+                }
+                int removeLastVal = L.removeLast();
+                int bRemoveLastVal = bL.removeLast();
+                assertEquals(removeLastVal, bRemoveLastVal);
+            }
         }
     }
 }
