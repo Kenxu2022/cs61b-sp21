@@ -155,14 +155,14 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ArrayDeque) {
-            ArrayDeque<T> testArrayDeque = (ArrayDeque) o;
-            if (this == testArrayDeque) { // same reference
+        if (o instanceof Deque) {
+            Deque<T> testDeque = (Deque<T>) o;
+            if (this == testDeque) { // same reference
                 return true;
             }
-            if (this.size == testArrayDeque.size) {
+            if (this.size == testDeque.size()) {
                 Iterator<T> arrayDequeIterator = this.iterator();
-                Iterator<?> testArrayDequeIterator = testArrayDeque.iterator();
+                Iterator<?> testArrayDequeIterator = testDeque.iterator();
                 while (arrayDequeIterator.hasNext()) {
                     if (!arrayDequeIterator.next().equals(testArrayDequeIterator.next())) {
                         return false;
