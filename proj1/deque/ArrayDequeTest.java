@@ -60,6 +60,27 @@ public class ArrayDequeTest {
     }
 
     @Test
+    public void nestedEqualDequeTest() {
+        ArrayDeque<ArrayDeque> testDeque = new ArrayDeque<ArrayDeque>();
+        ArrayDeque<Integer> testEqualDeque = new ArrayDeque<Integer>();
+        for (int i = 0; i < 1000; i = i + 1) {
+            testEqualDeque.addLast(i);
+        }
+        for (int i = 0; i < 1000; i = i + 1) {
+            testDeque.addLast(testEqualDeque);
+        }
+        ArrayDeque<ArrayDeque> testDeque2 = new ArrayDeque<ArrayDeque>();
+        ArrayDeque<Integer> testEqualDeque2 = new ArrayDeque<Integer>();
+        for (int i = 0; i < 1000; i = i + 1) {
+            testEqualDeque2.addLast(i);
+        }
+        for (int i = 0; i < 1000; i = i + 1) {
+            testDeque2.addLast(testEqualDeque2);
+        }
+        assertEquals(testDeque, testDeque2);
+    }
+
+    @Test
     public void nonEqualDequeTest() {
         ArrayDeque<Integer> testDeque = new ArrayDeque<Integer>();
         ArrayDeque<Integer> testEqualDeque = new ArrayDeque<Integer>();
@@ -196,11 +217,11 @@ public class ArrayDequeTest {
             lld2.addFirst(i);
         }
 
-        for (double i = 0; i < 5000; i++) {
+        for (double i = 0; i < 500000; i++) {
             assertEquals("Should have the same value", i, (double) lld1.removeFirst(), 0.0);
         }
 
-        for (double i = 0; i < 5000; i++) {
+        for (double i = 0; i < 500000; i++) {
             assertEquals("Should have the same value", i, (double) lld2.removeLast(), 0.0);
         }
 

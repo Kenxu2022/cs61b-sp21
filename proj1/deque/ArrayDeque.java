@@ -17,21 +17,27 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     private void resizeUp() {
         int newLength = items.length * 2;
-        int oldFirstLength = items.length - nextFirst - 1;
         T[] newArray = (T[]) new Object[newLength];
-        System.arraycopy(items, 0, newArray, 0, nextLast);
-        System.arraycopy(items, nextFirst + 1, newArray, newLength - oldFirstLength, oldFirstLength);
-        nextFirst = newLength - oldFirstLength - 1;
+        int currentIndex = 0;
+        for (T i : this) {
+            newArray[currentIndex] = i;
+            currentIndex = currentIndex + 1;
+        }
+        nextFirst = newLength - 1;
+        nextLast = size();
         items = newArray;
     }
 
     private void resizeDown() {
         int newLength = items.length / 2;
-        int oldFirstLength = items.length - nextFirst - 1;
         T[] newArray = (T[]) new Object[newLength];
-        System.arraycopy(items, 0, newArray, 0, nextLast);
-        System.arraycopy(items, nextFirst + 1, newArray, newLength - oldFirstLength, oldFirstLength);
-        nextFirst = newLength - oldFirstLength - 1;
+        int currentIndex = 0;
+        for (T i : this) {
+            newArray[currentIndex] = i;
+            currentIndex = currentIndex + 1;
+        }
+        nextFirst = newLength - 1;
+        nextLast = size();
         items = newArray;
     }
 
@@ -58,11 +64,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     public void printDeque() {
-        for (int i = nextFirst + 1; i < 8; i = i + 1) {
-            System.out.print(items[i] + " ");
-        }
-        for (int i = 0; i < nextLast; i = i + 1) {
-            System.out.print(items[i] + " ");
+        for (T i : this) {
+            System.out.print(i);
         }
         System.out.println();
     }
@@ -74,12 +77,11 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         if (size >= 16 && size <= items.length / 2) {
             resizeDown();
         }
-        if (nextFirst == items.length - 1) {
-            return removeLastFirst();
-        }
-        nextFirst = nextFirst + 1;
+        nextFirst = getFirstIndex();
         size = size - 1;
-        return items[nextFirst];
+        T removedItem = items[nextFirst];
+        items[nextFirst] = null;
+        return removedItem;
     }
 
     public T removeLast() {
@@ -89,44 +91,27 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         if (size >= 16 && size <= items.length / 2) {
             resizeDown();
         }
-        if (nextLast == 0) {
-            return removeFirstLast();
-        }
-        nextLast = nextLast - 1;
+        nextLast = getLastIndex();
         size = size - 1;
-        return items[nextLast];
-    }
-
-    private T removeFirstLast() {
-        T[] newArray = (T[]) new Object[items.length - 1];
-        T removedItem = items[items.length - 1];
-        System.arraycopy(items, 0, newArray, 0, items.length - 1);
-        size = size - 1;
-        items = newArray;
+        T removedItem = items[nextLast];
+        items[nextLast] = null;
         return removedItem;
     }
 
-    private T removeLastFirst() {
-        T[] newArray = (T[]) new Object[items.length];
-        T removedItem = items[0];
-        System.arraycopy(items, 1, newArray, 0, items.length - 1);
-        size = size - 1;
-        nextLast = nextLast - 1;
-        items = newArray;
-        return removedItem;
+    private int getFirstIndex() {
+        int currentFirstIndex = nextFirst + 1;
+        return currentFirstIndex % items.length;
     }
 
-    private T[] tidyArray() {
-        T[] newArray = (T[]) new Object[size];
-        int firstLength = items.length - nextFirst - 1;
-        System.arraycopy(items, nextFirst + 1, newArray, 0, firstLength);
-        System.arraycopy(items, 0, newArray, firstLength, nextLast);
-        return newArray;
+    private int getLastIndex() {
+        int currentLastIndex = nextLast - 1;
+        return (currentLastIndex + items.length) % items.length;
     }
 
-    public T get(int index) {
-        T[] getArray = this.tidyArray();
-        return getArray[index];
+    public T get(int index) { // treat index as offset
+        int firstIndex = getFirstIndex();
+        int realIndex = (firstIndex + index) % items.length;
+        return items[realIndex];
     }
 
     public Iterator<T> iterator() {
@@ -179,7 +164,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
                 Iterator<T> arrayDequeIterator = this.iterator();
                 Iterator<?> testArrayDequeIterator = testArrayDeque.iterator();
                 while (arrayDequeIterator.hasNext()) {
-                    if (arrayDequeIterator.next() != testArrayDequeIterator.next()) {
+                    if (!arrayDequeIterator.next().equals(testArrayDequeIterator.next())) {
                         return false;
                     }
                 }
