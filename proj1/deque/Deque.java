@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public interface Deque<T> extends Iterable<T> {
     void addFirst(T item);
 
@@ -19,4 +21,6 @@ public interface Deque<T> extends Iterable<T> {
 
     T get(int index);
 
+    @Override
+    Iterator<T> iterator();
 }
